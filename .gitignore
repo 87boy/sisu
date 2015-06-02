@@ -64,8 +64,8 @@ target/
 # Config files
 *.config
 config.*
-*.conf
-*.wsgi
+#*.conf
+#*.wsgi
 
 # PyCharm
 .idea
