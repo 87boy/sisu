@@ -3,6 +3,7 @@
 
 from model import *
 
+
 def main():
     # Create the Flask-Restless API manager.
     api_manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)

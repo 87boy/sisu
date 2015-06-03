@@ -10,4 +10,4 @@ import logging
 logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0, '/path/to/the/application')
 
-from api import app as application
+from restless_api import app as application

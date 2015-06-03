@@ -51,7 +51,8 @@ class Floor(db.Model):
     __tablename__ = 'floor'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    building_id = db.Column(db.Integer, db.ForeignKey('building.id'), nullable=False)
+    building_id = db.Column(
+        db.Integer, db.ForeignKey('building.id'), nullable=False)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255))
     relationship = db.relationship('Room', backref='floor', lazy='dynamic')
@@ -74,7 +75,8 @@ class Device(db.Model):
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255))
-    relationship = db.relationship('SensorData', backref='device', lazy='dynamic')
+    relationship = db.relationship(
+        'SensorData', backref='device', lazy='dynamic')
 
 
 class Sensor(db.Model):
@@ -84,18 +86,21 @@ class Sensor(db.Model):
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255))
-    relationship = db.relationship('SensorData', backref='sensor', lazy='dynamic')
+    relationship = db.relationship(
+        'SensorData', backref='sensor', lazy='dynamic')
 
 
 class SensorData(db.Model):
     __tablename__ = 'sensor_data'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'), nullable=False)
-    device_id = db.Column(db.Integer, db.ForeignKey('device.id'), nullable=False)
+    sensor_id = db.Column(
+        db.Integer, db.ForeignKey('sensor.id'), nullable=False)
+    device_id = db.Column(
+        db.Integer, db.ForeignKey('device.id'), nullable=False)
     value = db.Column(db.Float)
     datetime = db.Column(db.DateTime)
     status = db.Column(db.Integer)
 
 # Create the database tables.
-#db.create_all()
+# db.create_all()
