@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from rest_api import app
+from large_app import app
 app.run(debug=True)

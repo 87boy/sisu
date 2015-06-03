@@ -4,4 +4,4 @@
 from flask import Flask
 app = Flask(__name__)
 
-import rest_api.views
+import large_app.views

@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 import flask.ext.restless
 
 from config import *
 
 # Create the Flask application and the Flask-SQLAlchemy object.
-
+app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 db = SQLAlchemy(app)
