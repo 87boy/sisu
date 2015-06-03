@@ -11,5 +11,5 @@ logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0, "/home/ubuntu/git/sisu/restless_api/")
 
 from restless_api import app as application
-#application.secret_key = 'test'
 
+application.secret_key = 'test'
