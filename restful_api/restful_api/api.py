@@ -80,10 +80,7 @@ class UserResource(Resource):
     def get(self, user_id):
         record = User.query.filter_by(id=user_id).first()
         # return jsonify(json_list=record), 200
-        if record:
-            return to_json(record), 200
-        else:
-            return {'status':'not found'}, 404
+        return to_json(record), 200
 
     def put(self, user_id):
         parser = reqparse.RequestParser()
@@ -111,10 +108,7 @@ class UserList(Resource):
         # results = []
         # for idx in user_list:
         #     results.append(to_json(idx))
-        if record_list:
-            return to_json_list(record_list), 200
-        else:
-            return {'status':'not found'}, 404
+        return to_json_list(record_list), 200
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -144,6 +138,7 @@ class Login(Resource):
         else:
             return {'status': 'login failed'}, 200
 
+
 class BuildingResource(Resource):
 
     def get(self, building_id):
@@ -153,9 +148,9 @@ class BuildingResource(Resource):
 
     def put(self, building_id):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=unicode)
+        parser.add_argument('name', type=str)
         args = parser.parse_args()
-        record = Building.query.filter_by(id=building_id).first()
+        record = Building.query.filter_by(id=user_id).first()
         if record:
             record.name = args['name']
         db.session.commit()
@@ -181,61 +176,13 @@ class BuildingList(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=unicode)
+        parser.add_argument('name', type=str)
         parser.add_argument('latitude', type=str)
         parser.add_argument('longitude', type=str)
-        parser.add_argument('description', type=unicode)
+        parser.add_argument('description', type=str)
         args = parser.parse_args()
-        new_record = User(args['name'], args['latitude'], args['longitude'], args['description'])
-        db.session.add(new_record)
-        result = db.session.commit()
-        # new_user = User(username, password, email)
-        # db.session.add(new_user)
-        # result = db.session.commit()
-        return new_record.id, 201
-
-class FloorResource(Resource):
-
-    def get(self, floor_id):
-        record = Floor.query.filter_by(id=floor_id).first()
-        # return jsonify(json_list=record), 200
-        return to_json(record), 200
-
-    def put(self, floor_id):
-        parser = reqparse.RequestParser()
-        parser.add_argument('name', type=unicode)
-        args = parser.parse_args()
-        record = Floor.query.filter_by(id=floor_id).first()
-        if record:
-            record.name = args['name']
-        db.session.commit()
-        # return args, 201
-        return to_json(record), 201
-
-    def delete(self, floor_id):
-        record = Floor.query.filter_by(id=floor_id).first()
-        db.session.delete(record)
-        db.session.commit()
-        return {'status': 'deleted'}, 204
-
-
-class FloorList(Resource):
-
-    def get(self):
-        floor_list = Floor.query.all()
-        # return jsonify(json_list=[i.serialize for i in user_list]), 200
-        # results = []
-        # for idx in user_list:
-        #     results.append(to_json(idx))
-        return to_json_list(floor_list), 200
-
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('building_id', type=int)
-        parser.add_argument('name', type=unicode)
-        parser.add_argument('description', type=unicode)
-        args = parser.parse_args()
-        new_record = Floor(args['building_id'], args['name'], args['description'])
+        new_record = User(
+            args['name'], args['latitude'], args['longitude'], args['description'])
         db.session.add(new_record)
         result = db.session.commit()
         # new_user = User(username, password, email)
@@ -249,9 +196,6 @@ api.add_resource(UserResource, '/user/<user_id>')
 api.add_resource(Login, '/login', '/login/')
 api.add_resource(BuildingList, '/building', '/building/')
 api.add_resource(BuildingResource, '/building/<building_id>')
-api.add_resource(FloorList, '/floor', '/floor/')
-api.add_resource(FloorResource, '/floor/<floor_id>')
-
 
 if __name__ == '__main__':
     app.run()
