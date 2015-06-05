@@ -35,6 +35,18 @@ class User(db.Model):
             'email': self.email
         }
 
+
+class Building(db.Model):
+    __tablename__ = 'building'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    latitude = db.Column(db.String(255))
+    longitude = db.Column(db.String(255))
+    description = db.Column(db.String(255))
+    relationship = db.relationship('Floor', backref='building', lazy='dynamic')
+
+
 class Floor(db.Model):
     __tablename__ = 'floor'
 
