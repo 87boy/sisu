@@ -46,6 +46,12 @@ class Building(db.Model):
     description = db.Column(db.String(255))
     relationship = db.relationship('Floor', backref='building', lazy='dynamic')
 
+    def __init__(self, name, latitude, longitude, description):
+        self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
+        self.description = description
+
 
 class Floor(db.Model):
     __tablename__ = 'floor'
@@ -57,6 +63,11 @@ class Floor(db.Model):
     description = db.Column(db.String(255))
     relationship = db.relationship('Room', backref='floor', lazy='dynamic')
 
+    def __init__(self, building_id, name, description):
+        self.building_id = building_id
+        self.name = name
+        self.description = description
+
 
 class Room(db.Model):
     __tablename__ = 'room'
@@ -66,6 +77,11 @@ class Room(db.Model):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255))
     relationship = db.relationship('Device', backref='room', lazy='dynamic')
+
+    def __init__(self, floor_id, name, description):
+        self.floor_id = floor_id
+        self.name = name
+        self.description = description
 
 
 class Device(db.Model):
@@ -78,6 +94,11 @@ class Device(db.Model):
     relationship = db.relationship(
         'SensorData', backref='device', lazy='dynamic')
 
+    def __init__(self, room_id, name, description):
+        self.room_id = room_id
+        self.name = name
+        self.description = description
+
 
 class Sensor(db.Model):
     __tablename__ = 'sensor'
@@ -88,6 +109,11 @@ class Sensor(db.Model):
     description = db.Column(db.String(255))
     relationship = db.relationship(
         'SensorData', backref='sensor', lazy='dynamic')
+
+    def __init__(self, name, type, description):
+        self.name = name
+        self.type = type
+        self.description = description
 
 
 class SensorData(db.Model):
@@ -101,6 +127,12 @@ class SensorData(db.Model):
     value = db.Column(db.Float)
     datetime = db.Column(db.DateTime)
     status = db.Column(db.Integer)
+
+    def __init__(self, sensor_id, device_id, value, datetime):
+        self.sensor_id = sensor_id
+        self.device_id = device_id
+        self.value = value
+        self.datetime = datetime
 
 # Create the database tables.
 # db.create_all()
