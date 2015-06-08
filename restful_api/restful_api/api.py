@@ -85,7 +85,7 @@ class UserResource(Resource):
     def put(self, user_id):
         parser = reqparse.RequestParser()
         parser.add_argument('password', type=str)
-        args = parser.parse_args()
+        args = parser.parse_args(strict=True)
         record = User.query.filter_by(id=user_id).first()
         if record:
             record.password = args['password']
@@ -115,7 +115,7 @@ class UserList(Resource):
         parser.add_argument('username', type=str)
         parser.add_argument('password', type=str)
         parser.add_argument('email', type=str)
-        args = parser.parse_args()
+        args = parser.parse_args(strict=True)
         new_record = User(args['username'], args['password'], args['email'])
         db.session.add(new_record)
         result = db.session.commit()
@@ -149,7 +149,7 @@ class BuildingResource(Resource):
     def put(self, building_id):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=unicode)
-        args = parser.parse_args()
+        args = parser.parse_args(strict=True)
         record = Building.query.filter_by(id=building_id).first()
         if record:
             record.name = args['name']
@@ -180,7 +180,7 @@ class BuildingList(Resource):
         parser.add_argument('latitude', type=str)
         parser.add_argument('longitude', type=str)
         parser.add_argument('description', type=unicode)
-        args = parser.parse_args()
+        args = parser.parse_args(strict=True)
         new_record = Building(args['name'], args['latitude'], args['longitude'], args['description'])
         db.session.add(new_record)
         result = db.session.commit()
@@ -230,7 +230,7 @@ class FloorList(Resource):
         parser.add_argument('building_id', type=int)
         parser.add_argument('name', type=unicode)
         parser.add_argument('description', type=unicode)
-        args = parser.parse_args()
+        args = parser.parse_args(strict=True)
         new_record = Floor(args['building_id'], args['name'], args['description'])
         db.session.add(new_record)
         result = db.session.commit()
@@ -240,6 +240,347 @@ class FloorList(Resource):
         return new_record.id, 201
 
 
+class RoomResource(Resource):
+
+    def get(self, room_id):
+        record = Room.query.filter_by(id=room_id).first()
+        # return jsonify(json_list=record), 200
+        return to_json(record), 200
+
+    def put(self, room_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str)
+        args = parser.parse_args()
+        record = Room.query.filter_by(id=room_id).first()
+        if record:
+            record.name = args['name']
+            db.session.commit()
+            return {'status': 'updated'}, 201
+        else:
+            return {'status': 'room not exit'}, 404
+
+    def delete(self, room_id):
+        record = Room.query.filter_by(id=room_id).first()
+        db.session.delete(record)
+        db.session.commit()
+        return {'status': 'deleted'}, 204
+
+
+class RoomList(Resource):
+
+    def get(self):
+        floor_list = Room.query.all()
+        return to_json_list(floor_list), 200
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('floor_id', type=int)
+        parser.add_argument('name', type=unicode)
+        parser.add_argument('description', type=unicode)
+        args = parser.parse_args(strict=True)
+        new_record = Room(
+            args['floor_id'], args['name'], args['description'])
+        db.session.add(new_record)
+        db.session.commit()
+        return new_record.id, 201
+
+
+class DeviceResource(Resource):
+
+    def get(self, device_id):
+        record = Device.query.filter_by(id=device_id).first()
+        if record is not None:
+            return to_json(record), 200
+        else:
+            return {'status': 'device not exit'}
+
+    def put(self, device_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=unicode)
+        args = parser.parse_args()
+        record = Device.query.filter_by(id=device_id).first()
+        if record:
+            record.name = args['name']
+        db.session.commit()
+        return to_json(record), 201
+
+    def delete(self, device_id):
+        record = Device.query.filter_by(id=device_id).first()
+        db.session.delete(record)
+        db.session.commit()
+        return {'status': 'deleted'}, 204
+
+
+class DeviceList(Resource):
+
+    def get(self):
+        floor_list = Device.query.all()
+        return to_json_list(floor_list), 200
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('room_id', type=int)
+        parser.add_argument('name', type=unicode)
+        parser.add_argument('description', type=unicode)
+        parser.add_argument('uuid', type=str)
+        args = parser.parse_args(strict=True)
+        new_record = Device(
+            args['room_id'], args['name'],
+            args['uuid'], args['description'])
+        db.session.add(new_record)
+        result = db.session.commit()
+        return new_record.id, 201
+
+
+class sensorResource(Resource):
+
+    def get(self, sensor_id):
+        record = Sensor.query.filter_by(id=sensor_id).first()
+        if record is not None:
+            return to_json(record), 200
+        else:
+            return {"status": "sensor not exit"}
+
+    def put(self, sensor_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str)
+        args = parser.parse_args()
+        record = Sensor.query.filter_by(id=sensor_id).first()
+        if record:
+            record.name = args['name']
+            db.session.commit()
+            return to_json(record), 201
+        else:
+            return {"status": "sensor not exit"}
+
+    def delete(self, sensor_id):
+        record = Sensor.query.filter_by(id=sensor_id).first()
+        if record is not None:
+            db.session.delete(record)
+            db.session.commit()
+            return {'status': 'deleted'}, 204
+        else:
+            return {"status": "sensor not exit"}
+
+
+class sensorList(Resource):
+
+    def get(self):
+        floor_list = Sensor.query.all()
+        return to_json_list(floor_list), 200
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('type', type=str, location='json')
+        parser.add_argument('name', type=unicode, location='json')
+        parser.add_argument('uuid', type=str, location='json')
+        parser.add_argument('description', type=unicode, location='json')
+        args = parser.parse_args(strict=True)
+        new_record = Sensor(
+            args['type'], args['name'], args['uuid'], args['description'])
+        db.session.add(new_record)
+        db.session.commit()
+        return new_record.id, 201
+
+
+class DataResource(Resource):
+
+    def get(self, data_id):
+        record = SensorData.query.filter_by(id=data_id).first()
+        # return jsonify(json_list=record), 200
+        return to_json(record), 200
+
+    def put(self, data_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('value', type=str)
+        args = parser.parse_args()
+        record = SensorData.query.filter_by(id=data_id).first()
+        if record:
+            record.value = args['value']
+            db.session.commit()
+            return {"status": "updated"}, 201
+        else:
+            return {"status": "data not exit"}
+
+    def delete(self, data_id):
+        record = SensorData.query.filter_by(id=data_id).first()
+        db.session.delete(record)
+        db.session.commit()
+        return {'status': 'deleted'}, 204
+
+
+class dList(Resource):
+
+    def get(self):
+        floor_list = SensorData.query.all()
+        return to_json_list(floor_list), 200
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('device_id', type=int)
+        parser.add_argument('sensor_id', type=int)
+        parser.add_argument('value', type=unicode)
+        parser.add_argument('datetime', type=str)
+        parser.add_argument('status', type=int)
+        args = parser.parse_args(strict=True)
+        new_record = SensorData(
+            args['device_id'], args['sensor_id'], args['value'],
+            args['datetime'], args['status'])
+        db.session.add(new_record)
+        db.session.commit()
+        return new_record.id, 201
+
+
+# add a new device
+
+
+class locationList(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('uuid', type=str)
+        parser.add_argument('build_name', type=unicode)
+        parser.add_argument('floor_name', type=str)
+        parser.add_argument('room_name', type=str)
+        parser.add_argument('device_name', type=str)
+        parser.add_argument('description', type=unicode)
+        args = parser.parse_args(strict=True)
+        buildInfor = Building.query.filter_by(
+            name=args['build_name']).first_or_404()
+        if buildInfor:
+            floorInfor = Floor.query.filter_by(
+                name=args['floor_name'],
+                building_id=buildInfor.id).first_or_404()
+            print args['room_name']
+            print floorInfor.id
+            if floorInfor:
+                roomInfor = Room.query.filter_by(
+                    name=args['room_name'],
+                    floor_id=floorInfor.id).first_or_404()
+                if roomInfor:
+                    new_record = Device(
+                        roomInfor.id, args['device_name'],
+                        args['uuid'], args['description'])
+                    db.session.add(new_record)
+                    db.session.commit()
+                return {"status": "insert successful"}, 201
+            else:
+                return {"error": "floor not exit"}
+        else:
+            return {"error": "building not exit"}
+
+# lookup, update, delete a device
+
+
+class locationResource(Resource):
+
+    def get(self, uuid):
+        record = Device.query.filter_by(uuid=uuid).first()
+        if record:
+            try:
+                roomInfor = Room.query.filter_by(
+                    id=record.room_id).first_or_404()
+                floorInfor = Floor.query.filter_by(
+                    id=roomInfor.floor_id).first_or_404()
+                buildInfor = Building.query.filter_by(
+                    id=floorInfor.building_id).first_or_404()
+                deviceInfor = {}
+                deviceInfor['floor_name'] = floorInfor.name
+                deviceInfor['room_name'] = roomInfor.name
+                deviceInfor['build_name'] = buildInfor.name
+                return deviceInfor, 200
+            except:
+                return {"warning": "you may input error information,\
+                please ask the Administrator"}
+        else:
+            return {"error": "device not exit"}
+
+    def put(self, uuid):
+        parser = reqparse.RequestParser()
+        parser.add_argument('uuid', type=str)
+        args = parser.parse_args()
+        record = Device.query.filter_by(uuid=uuid).first()
+        if record:
+            record.uuid = args['uuid']
+            db.session.commit()
+            return {"status": 'updated'}, 201
+        else:
+            return {"status": 'device not exit'}, 404
+
+    def delete(self, uuid):
+        record = Device.query.filter_by(uuid=uuid).first()
+        if record:
+            db.session.delete(record)
+            db.session.commit()
+            return {'status': 'deleted'}, 204
+        else:
+            return {'status': 'device not exit'}
+
+
+class dataSensor(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('build_name', type=unicode)
+        parser.add_argument('floor_name', type=str)
+        parser.add_argument('room_name', type=str)
+        parser.add_argument('sensor_type', type=str)
+        args = parser.parse_args(strict=True)
+        buildInfor = Building.query.filter_by(
+            name=args['build_name']).first_or_404()
+        if buildInfor:
+            floorInfor = Floor.query.filter_by(
+                name=args['floor_name'],
+                building_id=buildInfor.id).first_or_404()
+            if floorInfor:
+                roomInfor = Room.query.filter_by(
+                    name=args['room_name'],
+                    floor_id=floorInfor.id).first_or_404()
+                if roomInfor:
+                    deviceInfor = Device.query.filter_by(
+                        room_id=roomInfor.id).first_or_404()
+        sensorInfor = Sensor.query.filter_by(
+            type=args['sensor_type']).first_or_404()
+        if sensorInfor and deviceInfor:
+            buf = SensorData.query.filter_by(
+                sensor_id=sensorInfor.id,
+                device_id=deviceInfor.id
+            ).order_by('datetime desc').limit(10)
+            if buf is not None:
+                return to_json_list(buf), 201
+            else:
+                return {"status": "no data"}
+        else:
+            return {"status": "no data"}
+
+
+class dataList(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('build_name', type=unicode)
+        parser.add_argument('floor_name', type=str)
+        parser.add_argument('room_name', type=str)
+        args = parser.parse_args(strict=True)
+        buildInfor = Building.query.filter_by(
+            name=args['build_name']).first_or_404()
+        if buildInfor:
+            floorInfor = Floor.query.filter_by(
+                name=args['floor_name'],
+                building_id=buildInfor.id).first_or_404()
+            if floorInfor:
+                roomInfor = Room.query.filter_by(
+                    name=args['room_name'],
+                    floor_id=floorInfor.id).first_or_404()
+                if roomInfor:
+                    deviceInfor = Device.query.filter_by(
+                        room_id=roomInfor.id).first_or_404()
+        if deviceInfor:
+            result = SensorData.query.filter_by(
+                device_id=deviceInfor.id
+            ).order_by('datetime desc').limit(10)
+        return to_json_list(result), 201
+
 api.add_resource(UserList, '/user', '/user/')
 api.add_resource(UserResource, '/user/<user_id>')
 api.add_resource(Login, '/login', '/login/')
@@ -247,7 +588,19 @@ api.add_resource(BuildingList, '/building', '/building/')
 api.add_resource(BuildingResource, '/building/<building_id>')
 api.add_resource(FloorList, '/floor', '/floor/')
 api.add_resource(FloorResource, '/floor/<floor_id>')
-
+api.add_resource(RoomList, '/room', '/room/')
+api.add_resource(RoomResource, '/room/<room_id>')
+api.add_resource(DeviceList, '/device', '/device/')
+api.add_resource(DeviceResource, '/device/<device_id>')
+api.add_resource(dList, '/data', '/data/')
+api.add_resource(DataResource, '/data/<data_id>')
+api.add_resource(sensorList, '/sensor', '/sensor/')
+api.add_resource(sensorResource, '/sensor/<sensor_id>')
+api.add_resource(locationResource, '/location/<uuid>')
+api.add_resource(locationList, '/location', '/location/')
+api.add_resource(dataSensor, '/type/data', '/type/data/')
+api.add_resource(dataList, '/all/data', '/all/data/')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
+

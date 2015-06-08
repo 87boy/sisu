@@ -4,11 +4,10 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from config import *
 
 app = Flask(__name__)
-app.config['DEBUG'] = DEBUG
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['DEBUG'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:marvinzns@localhost/test?charset=utf8"
 # app.config.from_object(rest_api.default_settings)
 db = SQLAlchemy(app)
 
@@ -90,11 +89,12 @@ class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     name = db.Column(db.String(255), nullable=False)
+    uuid = db.Column(db.String(255), unique=True)
     description = db.Column(db.String(255))
     relationship = db.relationship(
         'SensorData', backref='device', lazy='dynamic')
 
-    def __init__(self, room_id, name, description):
+    def __init__(self, room_id, name, uuid, description):
         self.room_id = room_id
         self.name = name
         self.description = description
