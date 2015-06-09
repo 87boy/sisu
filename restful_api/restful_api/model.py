@@ -96,6 +96,7 @@ class Device(db.Model):
 
     def __init__(self, room_id, name, uuid, description):
         self.room_id = room_id
+        self.uuid = uuid
         self.name = name
         self.description = description
 
