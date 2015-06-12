@@ -539,6 +539,34 @@ class dataList(Resource):
             ).order_by('datetime desc').limit(10)
         return to_json_list(result), 201
 
+class locationInfor(Resource):
+
+    def get(self):
+        locaList = []
+        rooms = Room.query.all()
+        if rooms:
+            for room in rooms:
+                location = {}
+                location['room_name'] = room.name
+                floors = Floor.query.filter_by(id=room.floor_id).all()
+                if floors:
+                    for floor in floors:
+                        location['floor_name'] = floor.name
+                        build = Building.query.filter_by(
+                            id=floor.building_id).all()
+                        if build is not None:
+                            location['build_name'] = build[0].name
+                            locaList.append(location)
+                        else:
+                            return {'status': 'the building not exit'}
+                else:
+                    return {'status': 'the floor not exit'}
+
+        else:
+            return {'status': 'the room not exit'}
+
+        return locaList
+
 api.add_resource(UserList, '/user', '/user/')
 api.add_resource(UserResource, '/user/<user_id>')
 api.add_resource(Login, '/login', '/login/')
@@ -558,6 +586,7 @@ api.add_resource(locationResource, '/location/<uuid>')
 api.add_resource(locationList, '/location', '/location/')
 api.add_resource(dataSensor, '/type/data', '/type/data/')
 api.add_resource(dataList, '/all/data', '/all/data/')
+api.add_resource(locationInfor, '/get/location', '/get/location/')
 
 if __name__ == '__main__':
     app.run(debug=True)
