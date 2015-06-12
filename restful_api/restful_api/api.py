@@ -47,9 +47,10 @@ class UserResource(Resource):
         record = User.query.filter_by(id=user_id).first()
         if record:
             record.password = args['password']
-        db.session.commit()
-        # return args, 201
-        return to_json(record), 201
+            db.session.commit()
+            return {'status': 'updated'}, 201
+        else:
+            return {'status': 'user not exist'}, 404
 
     def delete(self, user_id):
         record = User.query.filter_by(id=user_id).first()
@@ -111,9 +112,10 @@ class BuildingResource(Resource):
         record = Building.query.filter_by(id=building_id).first()
         if record:
             record.name = args['name']
-        db.session.commit()
-        # return args, 201
-        return to_json(record), 201
+            db.session.commit()
+            return {'status': 'updated'}, 201
+        else:
+            return {'status': 'building not exist!'}, 404
 
     def delete(self, building_id):
         record = Building.query.filter_by(id=building_id).first()
@@ -162,9 +164,10 @@ class FloorResource(Resource):
         record = Floor.query.filter_by(id=floor_id).first()
         if record:
             record.name = args['name']
-        db.session.commit()
-        # return args, 201
-        return to_json(record), 201
+            db.session.commit()
+            return {'status': 'updated'}, 201
+        else:
+            return {'status': 'floor not exist'}, 404
 
     def delete(self, floor_id):
         record = Floor.query.filter_by(id=floor_id).first()
@@ -259,8 +262,10 @@ class DeviceResource(Resource):
         record = Device.query.filter_by(id=device_id).first()
         if record:
             record.name = args['name']
-        db.session.commit()
-        return to_json(record), 201
+            db.session.commit()
+            return {'status': 'updated'}, 201
+        else:
+            return {'status': 'device not exist!'}, 404
 
     def delete(self, device_id):
         record = Device.query.filter_by(id=device_id).first()

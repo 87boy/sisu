@@ -4,10 +4,11 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
+from config import *
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:marvinzns@localhost/test?charset=utf8"
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 # app.config.from_object(rest_api.default_settings)
 db = SQLAlchemy(app)
 
